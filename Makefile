@@ -4,7 +4,7 @@
 # Edit this file to compile extra C files into their own programs.
 TARGET= beatBox
 
-SOURCES= beatbox.c audioMixer.c
+SOURCES= joystick.c beatbox.c audioMixer.c main.c
 
 
 PUBDIR = $(HOME)/cmpt433/public/myApps
@@ -28,8 +28,6 @@ LFLAGS = -L$(HOME)/cmpt433/public/asound_lib_BBB
 
 # -pg for supporting gprof profiling.
 #CFLAGS += -pg
-
-
 
 all: wav
 	$(CC_C) $(CFLAGS) $(SOURCES) -o $(OUTDIR)/$(TARGET)  $(LFLAGS) -lpthread -lasound

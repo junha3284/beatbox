@@ -14,7 +14,7 @@
 
 #define DEFAULT_BPM 100
 #define DEFAULT_NUM_BPM_MODE 3
-#define DEFAULT_BEATMODE 0;
+#define DEFAULT_BEATMODE 1;
 
 static int bpm;
 static int beatMode;
@@ -44,11 +44,12 @@ static void* playingLoop(void*);
 // Start background thread for playing beats
 // return 0 for success
 // return an error number for error
-int BeatBox_init(){
+int Beatbox_init(){
 
     bpm = DEFAULT_BPM;
-    beatMode = DEFAULT_NUM_BPM_MODE;
-    numBeatMode = DEFAULT_BEATMODE;
+    numBeatMode = DEFAULT_NUM_BPM_MODE;
+    beatMode = DEFAULT_BEATMODE;
+    running = true;
     reqtime.tv_sec = 0;
     reqtime.tv_nsec = (1000000000/bpm) * 30;
     AudioMixer_init();
@@ -144,14 +145,13 @@ static void stopForBpm(void)
 void Beatbox_end()
 {
     running = false;
+    pthread_join(playingThread, NULL);
 
     AudioMixer_cleanup();
     AudioMixer_freeWaveFileData(&hiHatFile);
     AudioMixer_freeWaveFileData(&baseFile);
     AudioMixer_freeWaveFileData(&snareFile);
     AudioMixer_freeWaveFileData(&coFile);
-
-    pthread_join(playingThread, NULL);
 }
 
 // Set BPM of currently playing audio
