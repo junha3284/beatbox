@@ -42,3 +42,4 @@ int Beatbox_changeMode();
 // return the available of modes (including no-sound mode)
 int Beatbox_numMode();
 
+#endif

@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <pthread.h>
+#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 #include "audioMixer.h"
@@ -30,11 +32,13 @@ static wavedata_t coFile;
 static pthread_t playingThread;
 
 static pthread_mutex_t bpmLock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t bpmModeLock = PTHREAD_MUTEX_INITIALIZER;
+//static pthread_mutex_t bpmModeLock = PTHREAD_MUTEX_INITIALIZER;
 
 // function declarations
-static void play_mode_zero();
+static void play_mode_zero(void);
+static void play_mode_one(void);
 static void stopForBpm(void);
+static void* playingLoop(void*);
 
 
 // Start background thread for playing beats
@@ -43,7 +47,7 @@ static void stopForBpm(void);
 int BeatBox_init(){
 
     bpm = DEFAULT_BPM;
-    beatMode = DEFAULT_NUM_BPM;
+    beatMode = DEFAULT_NUM_BPM_MODE;
     numBeatMode = DEFAULT_BEATMODE;
     reqtime.tv_sec = 0;
     reqtime.tv_nsec = (1000000000/bpm) * 30;
@@ -60,7 +64,7 @@ int BeatBox_init(){
 
 static void* playingLoop(void *empty){
     while (running) {
-        switch(mode){
+        switch(beatMode){
             case 0:
                 play_mode_zero();
                 break;
@@ -69,8 +73,11 @@ static void* playingLoop(void *empty){
                 break;
             case 2:
                 break;
+            default:
+                break;
         }
     }
+    return NULL;
 }
 
 static void play_mode_zero(void)
@@ -126,11 +133,11 @@ static void play_mode_one(void)
 
 static void stopForBpm(void)
 {
-    pthread_lock_mutex (&BPMLock);
+    pthread_mutex_lock (&bpmLock);
     {
         nanosleep(&reqtime, NULL);
     }
-    pthread_unlock_mutex (&BPMLock);
+    pthread_mutex_unlock (&bpmLock);
 }
 
 // End the background thread 
@@ -160,11 +167,11 @@ int Beatbox_setBPM(int input_bpm)
         return 2;
 
     bpm = input_bpm; 
-    pthread_lock_mutex (&BPMLock);
+    pthread_mutex_lock (&bpmLock);
     {
         reqtime.tv_nsec = (1000000000/bpm) * 30;
     }
-    pthread_unlock_mutex (&BPMLock);
+    pthread_mutex_unlock (&bpmLock);
     return bpm;
 }
 
@@ -176,11 +183,11 @@ int Beatbox_increaseBPM()
     if (bpm > 300)
         bpm = 300;
 
-    pthread_lock_mutex (&BPMLock);
+    pthread_mutex_lock (&bpmLock);
     {
         reqtime.tv_nsec = (1000000000/bpm) * 30;
     }
-    pthread_unlock_mutex (&BPMLock);
+    pthread_mutex_unlock (&bpmLock);
     return bpm;
 }
 
@@ -192,11 +199,11 @@ int Beatbox_decreaseBPM()
     if (bpm < 40)
         bpm = 40;
 
-    pthread_lock_mutex (&BPMLock);
+    pthread_mutex_lock (&bpmLock);
     {
         reqtime.tv_nsec = (1000000000/bpm) * 30;
     }
-    pthread_unlock_mutex (&BPMLock);
+    pthread_mutex_unlock (&bpmLock);
     return bpm;
 }
 
@@ -211,8 +218,8 @@ int Beatbox_setMode(int i)
     // critical to give correct bpmMode for the current mode
     // without any delay
     if ( 0 <= i && i < numBeatMode){
-        bpmMode = i;
-        return bpmMode;
+        beatMode = i;
+        return beatMode;
     }
     return 1;
 }
@@ -221,9 +228,9 @@ int Beatbox_setMode(int i)
 //  return the mode after change
 int Beatbox_changeMode()
 {
-    bpmMode += 1;
-    bpmMode %= numBeatMode;
-    return bpmMode;
+    beatMode += 1;
+    beatMode %= numBeatMode;
+    return beatMode;
 }
 
 // return the available of modes (including no-sound mode)
@@ -231,4 +238,3 @@ int Beatbox_numMode()
 {
     return numBeatMode;
 }
-
