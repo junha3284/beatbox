@@ -37,7 +37,6 @@ static pthread_mutex_t bpmLock = PTHREAD_MUTEX_INITIALIZER;
 // function declarations
 static void play_mode_zero(void);
 static void play_mode_one(void);
-static void stopForBpm(void);
 static void* playingLoop(void*);
 
 
@@ -77,6 +76,11 @@ static void* playingLoop(void *empty){
             default:
                 break;
         }
+        pthread_mutex_lock (&bpmLock);
+        {
+            reqtime.tv_nsec = (1000000000/bpm) * 30;
+        }
+        pthread_mutex_unlock (&bpmLock);
     }
     return NULL;
 }
@@ -85,17 +89,17 @@ static void play_mode_zero(void)
 {
     AudioMixer_queueSound(&baseFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
     
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 }
 
 
@@ -103,42 +107,33 @@ static void play_mode_one(void)
 {
     AudioMixer_queueSound(&baseFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
     
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     // -----------------------------------------
     AudioMixer_queueSound(&baseFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
     
     AudioMixer_queueSound(&baseFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
-    stopForBpm();
+    nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&coFile);
-    stopForBpm();
-}
-
-static void stopForBpm(void)
-{
-    pthread_mutex_lock (&bpmLock);
-    {
-        nanosleep(&reqtime, NULL);
-    }
-    pthread_mutex_unlock (&bpmLock);
+    nanosleep(&reqtime, NULL);
 }
 
 // End the background thread 
@@ -166,10 +161,9 @@ int Beatbox_setBPM(int input_bpm)
     if (input_bpm > 300)
         return 2;
 
-    bpm = input_bpm; 
     pthread_mutex_lock (&bpmLock);
     {
-        reqtime.tv_nsec = (1000000000/bpm) * 30;
+        bpm = input_bpm; 
     }
     pthread_mutex_unlock (&bpmLock);
     return bpm;
@@ -179,13 +173,11 @@ int Beatbox_setBPM(int input_bpm)
 // return current bpm
 int Beatbox_increaseBPM()
 {
-    bpm += 5;
-    if (bpm > 300)
-        bpm = 300;
-
     pthread_mutex_lock (&bpmLock);
     {
-        reqtime.tv_nsec = (1000000000/bpm) * 30;
+        bpm += 5;
+        if (bpm > 300)
+            bpm = 300;
     }
     pthread_mutex_unlock (&bpmLock);
     return bpm;
@@ -195,13 +187,12 @@ int Beatbox_increaseBPM()
 // return curreunt bpm 
 int Beatbox_decreaseBPM()
 {
-    bpm -= 5;
-    if (bpm < 40)
-        bpm = 40;
-
     pthread_mutex_lock (&bpmLock);
     {
-        reqtime.tv_nsec = (1000000000/bpm) * 30;
+        bpm -= 5;
+        if (bpm < 40)
+            bpm = 40;
+
     }
     pthread_mutex_unlock (&bpmLock);
     return bpm;

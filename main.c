@@ -10,11 +10,7 @@ int main(){
         printf("hello\n");
         return 0;
     }
-    Joystick_input userInput = None;
-    while (userInput == None){
-        userInput = Joystick_read();
-        sleep(1);
-    }
+    sleep(20);
     Beatbox_end();
     Joystick_end();
     return 0;
