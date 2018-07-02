@@ -42,4 +42,13 @@ int Beatbox_changeMode();
 // return the available of modes (including no-sound mode)
 int Beatbox_numMode();
 
+// play BASE SOUND
+void Beatbox_playBase();
+
+// play SNARE_SOUND
+void Beatbox_playSnare();
+
+// play Hi_HAT_SOUND
+void Beatbox_playHihat();
+
 #endif

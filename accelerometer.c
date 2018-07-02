@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "beatbox.h"
 
 
 #define I2CDRV_LINUX_BUS1 "/dev/i2c-1"
@@ -15,6 +16,8 @@
 #define REG_IN 0x00
 #define REG_ACTIVE_MODE 0x2A
 #define REG_WRITE_ACTIVE 0X01
+
+#define THREAD_HOLD 10000
 
 static pthread_t listeningThread;
 static int i2cFileDesc;
@@ -41,17 +44,38 @@ int Accelerometer_init(void)
 
 static void* listenLoop (void *empty)
 {
-    while (true){
+    struct timespec reqtime;
+    reqtime.tv_sec = 0;
+    reqtime.tv_nsec = 500000000;
+
+    while (running){
         int size;
         unsigned char *list = readI2cReg(i2cFileDesc, REG_IN, &size);
-        for (int i =0; i < 7; i++)
-            printf("0x%02x ", list[i]);
-        int x = ((int) list[1])*16 + ((int) list[2])/16;
-        int y = list[3]*16 + list[4]/16;
-        int z = list[5]*16 + list[6]/16;
-        printf("x: %d, y: %d, z: %d\n", x, y, z);
+        __int16_t x = (list[1] << 8 | list[2]);
+        __int16_t y = (list[3] << 8 | list[4]);
+        __int16_t z = (list[5] << 8 | list[6]) - 16000;
+
+        // Display readed data
+        // printf("0x%02x ", list[i]);
+        // printf("x: %d, y: %d, z: %d\n", x, y, z);
+
+        if ( x < -THREAD_HOLD || x > THREAD_HOLD){
+            Beatbox_playBase();
+            nanosleep(&reqtime, NULL);
+            continue;
+        }
+        if ( y < -THREAD_HOLD || y > THREAD_HOLD){
+            Beatbox_playSnare();
+            nanosleep(&reqtime, NULL);
+            continue;
+        }
+        if ( z < -THREAD_HOLD || z > THREAD_HOLD){
+            Beatbox_playHihat();
+            nanosleep(&reqtime, NULL);
+            continue;
+        }
+
         free(list);
-        sleep(1);
     }
 
     return NULL;

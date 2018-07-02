@@ -14,7 +14,7 @@
 
 #define DEFAULT_BPM 100
 #define DEFAULT_NUM_BPM_MODE 3
-#define DEFAULT_BEATMODE 1;
+#define DEFAULT_BEATMODE 2 
 
 static int bpm;
 static int beatMode;
@@ -32,6 +32,7 @@ static wavedata_t coFile;
 static pthread_t playingThread;
 
 static pthread_mutex_t bpmLock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t fileLock = PTHREAD_MUTEX_INITIALIZER;
 //static pthread_mutex_t bpmModeLock = PTHREAD_MUTEX_INITIALIZER;
 
 // function declarations
@@ -143,10 +144,14 @@ void Beatbox_end()
     pthread_join(playingThread, NULL);
 
     AudioMixer_cleanup();
-    AudioMixer_freeWaveFileData(&hiHatFile);
-    AudioMixer_freeWaveFileData(&baseFile);
-    AudioMixer_freeWaveFileData(&snareFile);
-    AudioMixer_freeWaveFileData(&coFile);
+    pthread_mutex_lock (&fileLock);
+    {
+        AudioMixer_freeWaveFileData(&hiHatFile);
+        AudioMixer_freeWaveFileData(&baseFile);
+        AudioMixer_freeWaveFileData(&snareFile);
+        AudioMixer_freeWaveFileData(&coFile);
+    }
+    pthread_mutex_unlock (&fileLock);
 }
 
 // Set BPM of currently playing audio
@@ -229,3 +234,37 @@ int Beatbox_numMode()
 {
     return numBeatMode;
 }
+
+// play BASE SOUND
+void Beatbox_playBase()
+{
+    pthread_mutex_lock (&fileLock);
+    {
+        if (baseFile.numSamples > 0)
+            AudioMixer_queueSound(&baseFile);
+    }
+    pthread_mutex_unlock (&fileLock);
+}
+
+// play SNARE_SOUND
+void Beatbox_playSnare()
+{
+    pthread_mutex_lock (&fileLock);
+    {
+        if (snareFile.numSamples > 0) 
+            AudioMixer_queueSound(&snareFile);
+    }
+    pthread_mutex_unlock (&fileLock);
+}
+
+// play Hi_HAT_SOUND
+void Beatbox_playHihat()
+{
+    pthread_mutex_lock (&fileLock);
+    {
+        if (hiHatFile.numSamples > 0)
+            AudioMixer_queueSound(&hiHatFile);
+    }
+    pthread_mutex_unlock (&fileLock);
+}
+
