@@ -39,7 +39,7 @@ static pthread_mutex_t fileLock = PTHREAD_MUTEX_INITIALIZER;
 static void play_mode_zero(void);
 static void play_mode_one(void);
 static void* playingLoop(void*);
-
+static void updateWaitTime(void);
 
 // Start background thread for playing beats
 // return 0 for success
@@ -77,11 +77,6 @@ static void* playingLoop(void *empty){
             default:
                 break;
         }
-        pthread_mutex_lock (&bpmLock);
-        {
-            reqtime.tv_nsec = (1000000000/bpm) * 30;
-        }
-        pthread_mutex_unlock (&bpmLock);
     }
     return NULL;
 }
@@ -95,6 +90,8 @@ static void play_mode_zero(void)
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 
+    updateWaitTime();
+
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
@@ -102,7 +99,6 @@ static void play_mode_zero(void)
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 }
-
 
 static void play_mode_one(void)
 {
@@ -113,6 +109,8 @@ static void play_mode_one(void)
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 
+    updateWaitTime();
+
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
@@ -120,6 +118,7 @@ static void play_mode_one(void)
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 
+    updateWaitTime();
     // -----------------------------------------
     AudioMixer_queueSound(&baseFile);
     AudioMixer_queueSound(&hiHatFile);
@@ -129,12 +128,25 @@ static void play_mode_one(void)
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 
+    updateWaitTime();
+
     AudioMixer_queueSound(&snareFile);
     AudioMixer_queueSound(&hiHatFile);
     nanosleep(&reqtime, NULL);
 
     AudioMixer_queueSound(&coFile);
     nanosleep(&reqtime, NULL);
+
+    updateWaitTime();
+}
+
+static void updateWaitTime(void)
+{
+    pthread_mutex_lock (&bpmLock);
+    {
+        reqtime.tv_nsec = (1000000000/bpm) * 30;
+    }
+    pthread_mutex_unlock (&bpmLock);
 }
 
 // End the background thread 
