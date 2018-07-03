@@ -7,14 +7,15 @@
 
 <body>
 	<h1> BeagleBone Beat-Box </h1>
+    <p> starts at <span id = "uptime"> start time</span> </p>
 	<div id ="controller">
 		<section>
 			<h2> Drum Beat Selection </h2>
 			<p> current drum bea mode is: <span id = "currentBeat"></span></p>
 			<ul>
-				<li> <input type = "button" onclick="setDrumMode(0)" value = "None"></li>
-				<li> <input type = "button" onclick="setDrumMode(1)" value = "Rock #1"> </li>
-				<li> <input type = "button" onclick="setDrumMode(2)" value = "Rock #2"> </li>
+				<li> <input type = "button" onclick="setDrumMode(2)" value = "None"></li>
+				<li> <input type = "button" onclick="setDrumMode(0)" value = "Rock #1"> </li>
+				<li> <input type = "button" onclick="setDrumMode(1)" value = "Rock #2"> </li>
 			</ul>
 		</section>
 		<section>
@@ -28,7 +29,7 @@
 			<section>
 			<h2> Tempo </h2>
 			<div>
-				<input type="button" onclick="decreaseTemp()" value = "-">
+				<input type="button" onclick="decreaseTempo()" value = "-">
 				<span id = "currentTempo"> 100 </span>
 				<input type="button" onclick="increaseTempo()" value = "+">
 			</div>
@@ -44,8 +45,10 @@
 		</section>
 	</div>
 
-
+    <script src='/socket.io/socket.io.js' type='text/javascript'></script>
 	<script src='http://code.jquery.com/jquery-1.8.0.min.js' type='text/javascript'></script>
+	<script src='javascripts/udp_ui.js' type='text/javascript'></script>
+	<script src='javascripts/proc_ui.js' type='text/javascript'></script>
 </body>
 </html>
 

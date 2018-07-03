@@ -1,7 +1,7 @@
 "user strict";
 
 
-var PORT_NUMBER = 8080;
+var PORT_NUMBER = 8088;
 
 var http = require('http');
 var fs   = require('fs');
@@ -57,3 +57,8 @@ function sendFile(response, filePath, fileContents) {
 		);
 	response.end(fileContents);
 }
+
+var procServer = require('./lib/beatbox_server'); 
+procServer.listen(server);
+
+

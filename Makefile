@@ -29,7 +29,7 @@ LFLAGS = -L$(HOME)/cmpt433/public/asound_lib_BBB
 # -pg for supporting gprof profiling.
 #CFLAGS += -pg
 
-all: wav
+all: wav server
 	$(CC_C) $(CFLAGS) $(SOURCES) -o $(OUTDIR)/$(TARGET)  $(LFLAGS) -lpthread -lasound
 
 # Copy wave files to the shared folder
@@ -39,7 +39,7 @@ wav:
 
 server:
 	mkdir -p $(PUBDIR)/beatbox-server-copy/
-	cp as3-server/* $(PUBDIR)/beatbox-server-copy/
+	cp -r as3-server/* $(PUBDIR)/beatbox-server-copy/
 
 clean:
 	rm -f $(OUTDIR)/$(TARGET)

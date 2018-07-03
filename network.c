@@ -14,7 +14,7 @@
 #define RECEIVING_MSG_MAX_LEN 64 
 #define REPLYING_MSG_MAX_LEN 1024
 #define MYPORT 12345
-#define MAPPING_LENGTH 4
+#define MAPPING_LENGTH 8 
 #define BENCHMARK_PACKET_SIZE 1015 // for 'get array' command, while filling in Message for replying,
                                    // If Message for replying is larger than 1015 bytes, send it and create empty to fill left numbers in array. 
 
@@ -33,6 +33,9 @@ const static struct {
     {"setBpm", SetBpm},
     {"setVolume", SetVolume},
     {"setMode", SetMode},
+    {"playHihat", PlayHihat},
+    {"playBase", PlayBase},
+    {"playSnare", PlaySnare}, 
     {"help", Help}
 };
 
@@ -215,8 +218,36 @@ static void* recvLoop (void* empty)
                     }
                     printf("unknown error while verifying second argument for Get command\n");
                 }
-
-
+                case PlayHihat :
+                {
+                    pthread_mutex_lock (&currentCommandLock);
+                    {
+                        currentCommand.type = PlayHihat;
+                        pthread_cond_wait (&processingCommandCond, &currentCommandLock);
+                    }
+                    pthread_mutex_unlock (&currentCommandLock);
+                    break;
+                }
+                case PlayBase:
+                {
+                    pthread_mutex_lock (&currentCommandLock);
+                    {
+                        currentCommand.type = PlayBase;
+                        pthread_cond_wait (&processingCommandCond, &currentCommandLock);
+                    }
+                    pthread_mutex_unlock (&currentCommandLock);
+                    break;
+                }
+                case PlaySnare :
+                {
+                    pthread_mutex_lock (&currentCommandLock);
+                    {
+                        currentCommand.type = PlaySnare;
+                        pthread_cond_wait (&processingCommandCond, &currentCommandLock);
+                    }
+                    pthread_mutex_unlock (&currentCommandLock);
+                    break;
+                }
                 case Help:
                 {
                     replyToSender ("Accepted command examples:\n"

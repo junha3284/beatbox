@@ -1,8 +1,9 @@
 {
-    "name": "demo-static-server",
-    "version": "0.0.1",
-    "description": "Demo Node.js server.",
-    "dependencies": {
-        "mime": "~1.2.7"
-    }
+  "name": "demo-static-server",
+  "version": "0.0.1",
+  "description": "Demo Node.js server.",
+  "dependencies": {
+    "mime": "~1.2.7",
+    "socket.io": "^2.1.1"
+  }
 }

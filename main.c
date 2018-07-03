@@ -57,6 +57,24 @@ int main(){
                 Network_replyToCommand("Requested Mode is out of boundary\n");
                 break;
             }
+            case PlayBase:
+            {
+                Beatbox_playBase();
+                Network_replyToCommand("played base!");
+                break;
+            }
+            case PlaySnare:
+            {
+                Beatbox_playSnare();
+                Network_replyToCommand("played Snare!");
+                break;
+            }
+            case PlayHihat:
+            {
+                Beatbox_playHihat();
+                Network_replyToCommand("played Hihat!");
+                break;
+            }
             default:
                 break;
         }

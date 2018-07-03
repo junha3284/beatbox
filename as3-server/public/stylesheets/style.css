@@ -1,0 +1,18 @@
+ul {
+    list-style-type:none;
+    padding:0px;
+}
+
+ul li {
+    display: inline;
+}
+
+body {
+    text-align: center;
+}
+
+#controller {
+    width:50%;
+    margin:auto;
+    border: 3px solid black;
+}

@@ -13,6 +13,9 @@ typedef enum{
     SetVolume,
     SetMode,
     Help,
+    PlayHihat,
+    PlayBase,
+    PlaySnare,
     Invalid
 } CommandType; 
 
