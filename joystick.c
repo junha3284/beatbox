@@ -20,18 +20,17 @@
 #define GPIO_RT 47
 #define GPIO_DN 46
 #define GPIO_JSLFT 65
+#define GPIO_JSPB 27
 
-#define JOYSTICK_SIZE 4
+#define JOYSTICK_SIZE 5
 #define PATH_MAX_LENGTH 32 
-
-#define INOTIFY_BUF_LENGTH 100
 
 static pthread_t joystickListeningThread;
 
 static bool running;
 
 static FILE *pJoystickVal[JOYSTICK_SIZE];
-static int gpio_nums[JOYSTICK_SIZE] = {GPIO_UP, GPIO_RT, GPIO_DN, GPIO_JSLFT};
+static int gpio_nums[JOYSTICK_SIZE] = {GPIO_UP, GPIO_RT, GPIO_DN, GPIO_JSLFT, GPIO_JSPB};
 static char gpio_value_paths[JOYSTICK_SIZE][64];
 
 
@@ -89,12 +88,10 @@ static void* listeningLoop (void *empty)
     while (running){
  
         /* Initialize Inotify*/
-        printf("getting in busy wait\n");
         while (user_input == None && running){ 
             user_input = Joystick_read();
         }
-        printf("executing!\n");
-        
+
         switch(user_input){
             case None:
                 break;
@@ -118,6 +115,10 @@ static void* listeningLoop (void *empty)
                 Beatbox_decreaseBPM();
                 nanosleep(&reqtime, NULL);
                 break;
+            case Push:
+                user_input = None;
+                Beatbox_changeMode();
+                nanosleep(&reqtime, NULL);
             default:
                 break;
         }
@@ -138,6 +139,7 @@ void Joystick_end()
 // 1: Right
 // 2: Down 
 // 3: Left
+// 4: Push 
 // -1: None 
 Joystick_input Joystick_read()
 {

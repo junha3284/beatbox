@@ -7,6 +7,7 @@ enum Joystick_input {
     Right,
     Down,
     Left,
+    Push,
 };
 
 typedef enum Joystick_input Joystick_input;
