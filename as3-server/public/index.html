@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>Demo Math Server via Node.js</title>
+	<link rel='stylesheet' href='stylesheets/style.css'></link>
+</head>
+
+<body>
+	<h1> BeagleBone Beat-Box </h1>
+	<div id ="controller">
+		<section>
+			<h2> Drum Beat Selection </h2>
+			<p> current drum bea mode is: <span id = "currentBeat"></span></p>
+			<ul>
+				<li> <input type = "button" onclick="setDrumMode(0)" value = "None"></li>
+				<li> <input type = "button" onclick="setDrumMode(1)" value = "Rock #1"> </li>
+				<li> <input type = "button" onclick="setDrumMode(2)" value = "Rock #2"> </li>
+			</ul>
+		</section>
+		<section>
+			<h2> Volume </h2>
+			<div>
+				<input type="button" onclick="decreaseVolume()" value = "-">
+				<span id = "currentVolume"> 80 </span>
+				<input type="button" onclick="increaseVolume()" value = "+">
+			</div>
+		</section>
+			<section>
+			<h2> Tempo </h2>
+			<div>
+				<input type="button" onclick="decreaseTemp()" value = "-">
+				<span id = "currentTempo"> 100 </span>
+				<input type="button" onclick="increaseTempo()" value = "+">
+			</div>
+		</section>
+		<section>
+			<h2> Drum Beat Selection </h2>
+			<p> current drum bea mode is: <span id = "currentBeat"></span></p>
+			<ul>
+				<li> <input type="button" onclick="playHihat()" value = "Hihat"></li>
+				<li> <input type="button" onclick="playBase()" value = "Base"></li>
+				<li> <input type="button" onclick="playSnare()" value = "Snare"> </li>
+			</ul>
+		</section>
+	</div>
+
+
+	<script src='http://code.jquery.com/jquery-1.8.0.min.js' type='text/javascript'></script>
+</body>
+</html>
+
