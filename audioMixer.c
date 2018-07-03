@@ -56,6 +56,7 @@ void AudioMixer_init(void)
     //------------------------------------------------------------------------------------------
     for (int i=0; i < MAX_SOUND_BITES; i++){
         soundBites[i].location = 0;
+        free(soundBites[i].pSound);
         soundBites[i].pSound = NULL;
     }
     //------------------------------------------------------------------------------------------
@@ -256,6 +257,7 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
                         soundBites[j].pSound = NULL;
                     } 
                 }
+                current_pSound = NULL;
             }
             pthread_mutex_unlock(&audioMutex);
         }
@@ -265,9 +267,9 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
         else if (temp > SHRT_MAX)
             temp = SHRT_MAX;
 
+            
         playbackBuffer[i] = (short) temp;
     }
-    
     // ---------------------------------------------------------
 }
 

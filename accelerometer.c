@@ -17,7 +17,7 @@
 #define REG_ACTIVE_MODE 0x2A
 #define REG_WRITE_ACTIVE 0X01
 
-#define THREAD_HOLD 10000
+#define THREAD_HOLD 13000
 
 static pthread_t listeningThread;
 static int i2cFileDesc;
@@ -76,6 +76,7 @@ static void* listenLoop (void *empty)
         }
 
         free(list);
+        list = NULL;
     }
 
     return NULL;

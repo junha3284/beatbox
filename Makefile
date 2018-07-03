@@ -4,7 +4,7 @@
 # Edit this file to compile extra C files into their own programs.
 TARGET= beatBox
 
-SOURCES= joystick.c accelerometer.c beatbox.c audioMixer.c main.c
+SOURCES= joystick.c accelerometer.c network.c beatbox.c audioMixer.c main.c
 
 
 PUBDIR = $(HOME)/cmpt433/public/myApps

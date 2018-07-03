@@ -14,7 +14,7 @@
 
 #define DEFAULT_BPM 100
 #define DEFAULT_NUM_BPM_MODE 3
-#define DEFAULT_BEATMODE 2 
+#define DEFAULT_BEATMODE 0 
 
 static int bpm;
 static int beatMode;
@@ -155,7 +155,7 @@ void Beatbox_end()
 }
 
 // Set BPM of currently playing audio
-// It should be between 50 and 200 (inclusive)
+// It should be between 40 and 300 (inclusive)
 // return current BPM for success
 // return 1 for an error which happens when @bpm is lower than 40
 // return 2 for an error which happens when @bpm is higher than 300
@@ -205,7 +205,7 @@ int Beatbox_decreaseBPM()
 
 // Set the Mode of beats to i_th
 // return the mode for success
-// return 1 for an error when there is no @i_th beat
+// return -1 for an error when there is no @i_th beat
 int Beatbox_setMode(int i)
 {
     // even though bpmMode is critical section
@@ -217,7 +217,7 @@ int Beatbox_setMode(int i)
         beatMode = i;
         return beatMode;
     }
-    return 1;
+    return -1;
 }
 
 // Chnage the beat mode to the right next (circular)

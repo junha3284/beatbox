@@ -72,8 +72,8 @@ int Joystick_init()
     // make file pointer for value files of gpios 
     for (int i=0; i < JOYSTICK_SIZE; i++){
         snprintf(gpio_value_paths[i], 64, "%s%d%s", GPIO_PRE, gpio_nums[i], GPIO_VALUE_SUF);
-        printf("%s\n", gpio_value_paths[i]);
     }
+
     int threadCreateResult = pthread_create (&joystickListeningThread, NULL, listeningLoop, NULL);
     return threadCreateResult;
 }
@@ -84,9 +84,6 @@ static void* listeningLoop (void *empty)
     struct timespec reqtime;
     reqtime.tv_sec = 0;
     reqtime.tv_nsec = 500000000;
-    
-
-    
     
     Joystick_input user_input = None;
     while (running){

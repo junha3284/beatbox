@@ -32,7 +32,7 @@ int Beatbox_decreaseBPM();
 
 // Set the Mode of beats to i_th
 // return the mode for success
-// return 1 for an error when there is no @i_th beat
+// return -1 for an error when there is no @i_th beat
 int Beatbox_setMode(int i);
 
 // Chnage the beat mode to the right next (circular)
