@@ -3,7 +3,7 @@
 
 // Websocket connection to server
 var socket = io.connect();
-
+var timer;
 // Make connection to server when web page is fully loaded.
 $(document).ready(function() {
 	console.log("Document loaded");
@@ -14,6 +14,7 @@ $(document).ready(function() {
 
 	// Handle data coming back from the server
 	socket.on('fileContents', function(result) {
+        window.clearTimeout(timer);
 		var fileName = result.fileName;
 		var contents = result.contents;
 		var domObj;
@@ -24,12 +25,14 @@ $(document).ready(function() {
         var secs = totalSecond %60;
         $('#uptime').text(hours + ":" + mins + ":" + secs);
 	});
-	
 });
 
 function sendRequest(file) {
 	console.log("Requesting '" + file + "'");
 	socket.emit('proc', file);
+    timer = window.setTimeout(function(){
+        $('#uptime').text("no response from the server");
+    }, 1500);
 }
 
 function replaceAll(str, find, replace) {

@@ -28,8 +28,8 @@ int main(){
             {
                 int result = Beatbox_setBPM(num);
                 if (result >= 40){
-                    char buf[4];
-                    snprintf(buf, 4, "%d", result);
+                    char buf[32];
+                    snprintf(buf, 32, "BPM is set to %d!", result);
                     Network_replyToCommand (buf);
                     continue;
                 }
@@ -40,8 +40,8 @@ int main(){
             case SetVolume:
             {
                 AudioMixer_setVolume(num);
-                char buf[4];
-                snprintf(buf, 4, "%d", AudioMixer_getVolume());
+                char buf[32];
+                snprintf(buf, 32, "Volume is set to %d", AudioMixer_getVolume());
                 Network_replyToCommand (buf);
                 break;
             }
@@ -49,8 +49,8 @@ int main(){
             {
                 int result = Beatbox_setMode(num);
                 if (result != -1){
-                    char buf[4];
-                    snprintf(buf, 4, "%d", result);
+                    char buf[32];
+                    snprintf(buf, 32, "Mode is set to %d", result);
                     Network_replyToCommand (buf);
                     continue;
                 }

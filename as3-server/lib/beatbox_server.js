@@ -29,10 +29,15 @@ function handleCommand(socket) {
 		var buffer = new Buffer.from(data + '0');
 
 		var client = dgram.createSocket('udp4');
+        var timeout;
 		client.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
 		    if (err) 
 		    	throw err;
 		    console.log('UDP message sent to ' + HOST +':'+ PORT);
+            timeout = setTimeout(function() {
+                console.log('no respond from BBB');
+                socket.emit('noRespond', 'no respond from BBB');
+            }, 1000);
 		});
 		
 		client.on('listening', function () {
@@ -42,7 +47,7 @@ function handleCommand(socket) {
 		// Handle an incoming message over the UDP from the local application.
 		client.on('message', function (message, remote) {
 		    console.log("UDP Client: message Rx" + remote.address + ':' + remote.port +' - ' + message);
-		    
+		    clearTimeout(timeout); 
 		    var reply = message.toString('utf8')
 		    socket.emit('commandReply', reply);
 		    client.close();
@@ -60,7 +65,6 @@ function handleCommand(socket) {
 		// NOTE: Very unsafe? Why?
 		// Hint: think of ../
 		var absPath = "/proc/" + fileName;
-		console.log('accessing ' + absPath);
 		
 		fs.exists(absPath, function(exists) {
 			if (exists) {

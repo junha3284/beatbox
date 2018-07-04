@@ -1,5 +1,17 @@
 var socket = io.connect();
 
+
+
+$(document).ready(function(){
+    socket.on('noRespond', function(data){
+        console.log(data);
+    });
+    socket.on('commandReply', function(reply){
+        console.log(reply);
+    });
+});
+
+
 function setDrumMode(mode){
     sendCommand('setMode ' + mode);
 }
