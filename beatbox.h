@@ -13,6 +13,8 @@ int Beatbox_init();
 // End the background thread 
 void Beatbox_end();
 
+int Beatbox_getBpm();
+
 // Set BPM of currently playing audio
 // It should be between 50 and 200 (inclusive)
 // return the current bpm for success
@@ -29,6 +31,8 @@ int Beatbox_increaseBPM();
 // return the current bpm for sucess
 // return 1 for an error which happens when the current bpm is already minimum
 int Beatbox_decreaseBPM();
+
+int Beatbox_getMode();
 
 // Set the Mode of beats to i_th
 // return the mode for success

@@ -10,11 +10,13 @@
 #include <netdb.h>
 #include <string.h>
 #include "network.h"
+#include "audioMixer.h"
+#include "beatbox.h"
 
 #define RECEIVING_MSG_MAX_LEN 64 
 #define REPLYING_MSG_MAX_LEN 1024
 #define MYPORT 12345
-#define MAPPING_LENGTH 8 
+#define MAPPING_LENGTH 9 
 #define BENCHMARK_PACKET_SIZE 1015 // for 'get array' command, while filling in Message for replying,
                                    // If Message for replying is larger than 1015 bytes, send it and create empty to fill left numbers in array. 
 
@@ -36,6 +38,7 @@ const static struct {
     {"playHihat", PlayHihat},
     {"playBase", PlayBase},
     {"playSnare", PlaySnare}, 
+    {"getStatus", GetStatus},
     {"help", Help}
 };
 
@@ -122,7 +125,13 @@ static void* recvLoop (void* empty)
                     pthread_mutex_unlock (&currentCommandLock);
                     break;
                 }
-
+                case GetStatus:
+                {
+                    char buf[32];
+                    snprintf(buf, 32, "%d %d %d ", AudioMixer_getVolume(), Beatbox_getBpm(), Beatbox_getMode());
+                    replyToSender(buf);
+                    break;
+                } 
                 case SetBpm :
                 {
                     // get the second word from user's input
@@ -251,11 +260,11 @@ static void* recvLoop (void* empty)
                 case Help:
                 {
                     replyToSender ("Accepted command examples:\n"
-                            "\tcount -- display number arrays sorted.\n"
-                            "\tget length -- display length of array currently being sorted.\n"
-                            "\tget array -- display the full array being sorted.\n"
-                            "\tget 10 -- display the tenth element of array currently being sorted.\n"
-                            "\tstop -- cause the server program to end.\n");
+                            "\tsetBpm # -- set Bpm to # (40-300).\n"
+                            "\tsetVolume # -- set volume to # (0-100).\n"
+                            "\tplayBase -- play base once.\n"
+                            "\tplaySnare -- play snare once.\n"
+                            "\tplayHihat -- play hihat once.\n");
                     break;
                 }
                 case Invalid:

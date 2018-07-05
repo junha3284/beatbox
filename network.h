@@ -16,6 +16,7 @@ typedef enum{
     PlayHihat,
     PlayBase,
     PlaySnare,
+    GetStatus,
     Invalid
 } CommandType; 
 

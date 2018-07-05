@@ -18,6 +18,9 @@
 #define REG_WRITE_ACTIVE 0X01
 
 #define THREAD_HOLD 13000
+#define GRAVITY_OFFSET 16000
+
+#define READING_BYTE 7
 
 static pthread_t listeningThread;
 static int i2cFileDesc;
@@ -53,7 +56,7 @@ static void* listenLoop (void *empty)
         unsigned char *list = readI2cReg(i2cFileDesc, REG_IN, &size);
         __int16_t x = (list[1] << 8 | list[2]);
         __int16_t y = (list[3] << 8 | list[4]);
-        __int16_t z = (list[5] << 8 | list[6]) - 16000;
+        __int16_t z = (list[5] << 8 | list[6]) - GRAVITY_OFFSET;
 
         // Display readed data
         // printf("0x%02x ", list[i]);
@@ -123,7 +126,7 @@ static int writeI2cReg (int i2cFileDesc, unsigned char regAddr, unsigned char va
 // Need to free the returned array
 static unsigned char *readI2cReg (int i2CFileDesc, unsigned char regAddr, int *size)
 {
-    *size = 7;
+    *size = READING_BYTE;
 
     // To read a register, must first write the address
     int res = write(i2cFileDesc, &regAddr, sizeof(regAddr));

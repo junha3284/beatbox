@@ -16,6 +16,9 @@
 #define DEFAULT_NUM_BPM_MODE 3
 #define DEFAULT_BEATMODE 0 
 
+#define BPM_MAX 300
+#define BPM_MIN 40
+
 static int bpm;
 static int beatMode;
 static int numBeatMode;
@@ -33,7 +36,7 @@ static pthread_t playingThread;
 
 static pthread_mutex_t bpmLock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t fileLock = PTHREAD_MUTEX_INITIALIZER;
-//static pthread_mutex_t bpmModeLock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t bpmModeLock = PTHREAD_MUTEX_INITIALIZER;
 
 // function declarations
 static void play_mode_zero(void);
@@ -64,8 +67,14 @@ int Beatbox_init(){
 }
 
 static void* playingLoop(void *empty){
+    int mode;
     while (running) {
-        switch(beatMode){
+        pthread_mutex_lock (&bpmModeLock);
+        {
+            mode = beatMode;
+        }
+        pthread_mutex_unlock (&bpmModeLock);
+        switch(mode){
             case 0:
                 play_mode_zero();
                 break;
@@ -166,16 +175,27 @@ void Beatbox_end()
     pthread_mutex_unlock (&fileLock);
 }
 
+int Beatbox_getBpm()
+{
+    int temp;
+    pthread_mutex_lock (&bpmLock);
+    {
+       temp = bpm; 
+    }
+    pthread_mutex_unlock (&bpmLock);
+    return temp;
+}
+
 // Set BPM of currently playing audio
-// It should be between 40 and 300 (inclusive)
+// It should be between BPM_MIN and BPM_MAX (inclusive)
 // return current BPM for success
-// return 1 for an error which happens when @bpm is lower than 40
-// return 2 for an error which happens when @bpm is higher than 300
+// return 1 for an error which happens when @bpm is lower than BPM_MIN
+// return 2 for an error which happens when @bpm is higher than BPM_MAX
 int Beatbox_setBPM(int input_bpm)
 {
-    if (input_bpm < 40)
+    if (input_bpm < BPM_MIN)
         return 1;
-    if (input_bpm > 300)
+    if (input_bpm > BPM_MAX)
         return 2;
 
     pthread_mutex_lock (&bpmLock);
@@ -193,8 +213,8 @@ int Beatbox_increaseBPM()
     pthread_mutex_lock (&bpmLock);
     {
         bpm += 5;
-        if (bpm > 300)
-            bpm = 300;
+        if (bpm > BPM_MAX)
+            bpm = BPM_MAX;
     }
     pthread_mutex_unlock (&bpmLock);
     return bpm;
@@ -207,12 +227,23 @@ int Beatbox_decreaseBPM()
     pthread_mutex_lock (&bpmLock);
     {
         bpm -= 5;
-        if (bpm < 40)
-            bpm = 40;
+        if (bpm < BPM_MIN)
+            bpm = BPM_MIN;
 
     }
     pthread_mutex_unlock (&bpmLock);
     return bpm;
+}
+
+int Beatbox_getMode()
+{
+    int mode;
+    pthread_mutex_lock (&bpmModeLock);
+    {
+        mode = beatMode;
+    }
+    pthread_mutex_unlock (&bpmModeLock);
+    return mode;
 }
 
 // Set the Mode of beats to i_th
@@ -220,15 +251,15 @@ int Beatbox_decreaseBPM()
 // return -1 for an error when there is no @i_th beat
 int Beatbox_setMode(int i)
 {
-    // even though bpmMode is critical section
-    // because there is no harm for violating 
-    // So, didn't do mutex (Can be changed if it becomes
-    // critical to give correct bpmMode for the current mode
-    // without any delay
-    if ( 0 <= i && i < numBeatMode){
-        beatMode = i;
-        return beatMode;
+    pthread_mutex_lock (&bpmModeLock);
+    {
+        if ( 0 <= i && i < numBeatMode){
+            beatMode = i;
+            pthread_mutex_unlock (&bpmModeLock);
+            return i;
+        }
     }
+    pthread_mutex_unlock (&bpmModeLock);
     return -1;
 }
 
@@ -236,9 +267,15 @@ int Beatbox_setMode(int i)
 //  return the mode after change
 int Beatbox_changeMode()
 {
-    beatMode += 1;
-    beatMode %= numBeatMode;
-    return beatMode;
+    int mode;
+    pthread_mutex_lock (&bpmModeLock);
+    {
+        beatMode += 1;
+        beatMode %= numBeatMode;
+        mode = beatMode;
+    }
+    pthread_mutex_unlock(&bpmModeLock);
+    return mode;
 }
 
 // return the available of modes (including no-sound mode)

@@ -155,7 +155,7 @@ Joystick_input Joystick_read()
     int result = -1;
 
     char c;
-    for (int i=0; i < JOYSTICK_SIZE; i++){
+    for (int i = 0; i < JOYSTICK_SIZE; i++){
         c = fgetc(pJoystickVal[i]);
         if (c == '0'){
            result = i;

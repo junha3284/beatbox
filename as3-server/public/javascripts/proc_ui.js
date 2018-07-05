@@ -32,6 +32,7 @@ function sendRequest(file) {
 	socket.emit('proc', file);
     timer = window.setTimeout(function(){
         $('#uptime').text("no response from the server");
+        $('#connectionStatus').text("no response from the server");
     }, 1500);
 }
 
