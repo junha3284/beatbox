@@ -148,15 +148,11 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	assert(pSound->numSamples > 0);
 	assert(pSound->pData);
 
-    int indicator = 0;
     pthread_mutex_lock (&audioMutex);
     {
         for (int i=0; i < MAX_SOUND_BITES; i++){
             if (soundBites[i].pSound == NULL){
                 soundBites[i].pSound = pSound; 
-                indicator = 1;
-            }
-            if (indicator){
                 pthread_mutex_unlock (&audioMutex);
                 return;
             }
@@ -247,7 +243,7 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
             pthread_mutex_lock(&audioMutex);
             {
                 wavedata_t *current_pSound = soundBites[j].pSound;
-                if ( current_pSound != NULL ){
+                if ( current_pSound != NULL){
                     int soundValueFromSource = (int) (current_pSound->pData)[soundBites[j].location];
                     temp += soundValueFromSource; 
                     soundBites[j].location++;

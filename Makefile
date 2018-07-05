@@ -2,7 +2,7 @@
 # by Brian Fraser
 
 # Edit this file to compile extra C files into their own programs.
-TARGET= beatBox
+TARGET= beatbox
 
 SOURCES= joystick.c accelerometer.c network.c beatbox.c audioMixer.c main.c
 

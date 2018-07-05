@@ -1,6 +1,8 @@
 "use strict";
+
 /*
- * Respond to commands over a websocket to relay UDP commands to a local program
+ * Refered : codes from cmpt 433 nodejs examples 
+ * Created the module for udp communication with beatbox process
  */
 
 var fs   = require('fs');

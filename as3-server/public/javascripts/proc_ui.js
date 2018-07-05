@@ -3,7 +3,10 @@
 
 // Websocket connection to server
 var socket = io.connect();
+
+// Timer for check the server is responding or not
 var timer;
+
 // Make connection to server when web page is fully loaded.
 $(document).ready(function() {
 	console.log("Document loaded");

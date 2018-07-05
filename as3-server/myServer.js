@@ -9,8 +9,10 @@ var path = require('path');
 var mime = require('mime');
 
 /* 
+ * Refered : codes from cmpt 433 nodejs examples 
  * Create the static web server
  */
+
 var server = http.createServer(function(request, response) {
 	var filePath = false;
 	

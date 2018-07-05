@@ -1,13 +1,16 @@
+"use strict";
+
+// Websocket connection to server
 var socket = io.connect();
-
-
 
 $(document).ready(function(){
 
 	window.setInterval(function() {socket.emit('getCurrentStatus')}, 500);
+
     socket.on('noRespond', function(data){
         $('#connectionStatus').text(data); 
     });
+
     socket.on('currentStatusReply', function(reply){
         var Status = reply.split(' ');
         $('#currentVolume').text(Status[0]); 
