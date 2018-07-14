@@ -58,12 +58,10 @@ int Joystick_init()
     for (int i=0; i < JOYSTICK_SIZE; i++){
         snprintf(buf, 64, "%s%d%s", GPIO_PRE, gpio_nums[i], GPIO_DIRECTION_SUF);
         FILE *pJoystickDirection = fopen(buf, "w");
-        for (int i=0; i < JOYSTICK_SIZE; i++){
-            int charWritten = fprintf(pJoystickDirection, "%s", "in"); 
-            if (charWritten <= 0){
-                printf("ERROR SETTING DIRECTION GPIO pins\n");
-                return 1;
-            }
+        int charWritten = fprintf(pJoystickDirection, "%s", "in"); 
+        if (charWritten <= 0){
+            printf("ERROR SETTING DIRECTION GPIO pins\n");
+            return 1;
         }
         fclose(pJoystickDirection);
     }
